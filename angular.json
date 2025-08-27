@@ -22,13 +22,14 @@
               }
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.css"
-            ],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            ]
+            // "server": "src/main.server.ts",
+            // "outputMode": "server",
+            // "ssr": {
+            //   "entry": "src/server.ts"
+            // }
           },
           "configurations": {
             "production": {
@@ -86,5 +87,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "98d5d017-401d-49f1-9199-2cb3dcb06698"
   }
 }
