@@ -1,0 +1,128 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 16px 0;
+}
+
+.toolbar .mat-mdc-form-field {
+  width: 300px;
+}
+
+table {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.mat-mdc-header-cell {
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.mat-mdc-cell {
+  padding: 12px 8px;
+}
+
+/* Estados del turno */
+.estado-agendado {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.estado-en-recepcion {
+  background-color: #fff3e0;
+  color: #f57c00;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.estado-finalizado {
+  background-color: #e8f5e8;
+  color: #388e3c;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Modal para selección de jaula */
+.modal-jaula {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-contenido {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  min-width: 400px;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-contenido h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.modal-acciones {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.w100 {
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .toolbar .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  .modal-contenido {
+    margin: 16px;
+    min-width: auto;
+  }
+}
+
+/* Botones de acción */
+.mat-mdc-icon-button {
+  margin: 0 4px;
+}
+
+.mat-mdc-icon-button[color="primary"] {
+  color: #1976d2;
+}
+
+.mat-mdc-icon-button[color="accent"] {
+  color: #ff9800;
+}
+
+.mat-mdc-icon-button[color="warn"] {
+  color: #f44336;
+}

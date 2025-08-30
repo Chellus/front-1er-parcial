@@ -1,0 +1,25 @@
+<h2 *ngIf="!isEdit">Nueva jaula</h2>
+<h2 *ngIf="isEdit">Editar jaula #{{ id }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+  <mat-form-field appearance="outline" class="w100">
+    <mat-label>Nombre</mat-label>
+    <input matInput formControlName="nombre" required maxlength="100" />
+    <mat-error *ngIf="form.controls.nombre.hasError('required')">
+      El nombre es obligatorio
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w100" *ngIf="isEdit">
+    <mat-label>Estado</mat-label>
+    <mat-select formControlName="enUso">
+      <mat-option value="N">Libre</mat-option>
+      <mat-option value="S">En Uso</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div class="actions">
+    <button mat-stroked-button routerLink="/jaulas">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Guardar</button>
+  </div>
+</form>

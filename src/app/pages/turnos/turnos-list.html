@@ -1,0 +1,94 @@
+<div class="toolbar">
+  <a mat-raised-button color="primary" routerLink="/turnos/nuevo">
+    <mat-icon>add</mat-icon> Nuevo Turno
+  </a>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Filtrar</mat-label>
+    <input matInput [formControl]="filter" placeholder="Buscar por proveedor o fecha..." />
+  </mat-form-field>
+</div>
+
+<table mat-table [dataSource]="(items$ | async) ?? []" class="mat-elevation-z2">
+  <ng-container matColumnDef="idTurno">
+    <th mat-header-cell *matHeaderCellDef>ID</th>
+    <td mat-cell *matCellDef="let row">{{ row.idTurno }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="fecha">
+    <th mat-header-cell *matHeaderCellDef>Fecha</th>
+    <td mat-cell *matCellDef="let row">{{ row.fecha | date:'dd/MM/yyyy' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="horario">
+    <th mat-header-cell *matHeaderCellDef>Horario</th>
+    <td mat-cell *matCellDef="let row">{{ row.horaInicioAgendamiento }} - {{ row.horaFinAgendamiento }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="proveedor">
+    <th mat-header-cell *matHeaderCellDef>Proveedor</th>
+    <td mat-cell *matCellDef="let row">{{ row.nombreProveedor }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="estado">
+    <th mat-header-cell *matHeaderCellDef>Estado</th>
+    <td mat-cell *matCellDef="let row">
+      <span [class]="'estado-' + getEstadoClass(row)">
+        {{ getEstadoTurno(row) }}
+      </span>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="acciones">
+    <th mat-header-cell *matHeaderCellDef>Acciones</th>
+    <td mat-cell *matCellDef="let row">
+      <button mat-icon-button 
+              *ngIf="!row.horaInicioRecepcion && !row.horaFinRecepcion"
+              color="primary" 
+              (click)="mostrarInicioRecepcion(row.idTurno)"
+              matTooltip="Iniciar Recepción">
+        <mat-icon>play_arrow</mat-icon>
+      </button>
+      
+      <button mat-icon-button 
+              *ngIf="row.horaInicioRecepcion && !row.horaFinRecepcion"
+              color="accent" 
+              (click)="finalizarRecepcion(row.idTurno, row.idJaula)"
+              matTooltip="Finalizar Recepción">
+        <mat-icon>stop</mat-icon>
+      </button>
+      
+      <button mat-icon-button color="warn" (click)="delete(row.idTurno)" matTooltip="Eliminar">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+
+<!-- Modal para seleccionar jaula -->
+<div class="modal-jaula" *ngIf="mostrandoModalJaula">
+  <div class="modal-contenido">
+    <h3>Seleccionar Jaula para Recepción</h3>
+    <mat-form-field appearance="outline" class="w100">
+      <mat-label>Jaula disponible</mat-label>
+      <mat-select [(value)]="jaulaSeleccionada">
+        <mat-option value="">Seleccione una jaula...</mat-option>
+        <mat-option *ngFor="let jaula of jaulasLibres$ | async" [value]="jaula.idJaula">
+          {{ jaula.nombre }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div class="modal-acciones">
+      <button mat-stroked-button (click)="cancelarInicioRecepcion()">Cancelar</button>
+      <button mat-raised-button 
+              color="primary" 
+              (click)="iniciarRecepcion()"
+              [disabled]="!jaulaSeleccionada">
+        Confirmar
+      </button>
+    </div>
+  </div>
+</div>

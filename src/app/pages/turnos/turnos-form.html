@@ -1,0 +1,100 @@
+<h2>Reservar Turno</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+  <div class="form-row">
+    <mat-form-field appearance="outline" class="w50">
+      <mat-label>Fecha</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="fecha" required>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="form.controls.fecha.hasError('required')">
+        La fecha es obligatoria
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w50">
+      <mat-label>Proveedor</mat-label>
+      <mat-select formControlName="idProveedor">
+        <mat-option value="">Seleccione un proveedor...</mat-option>
+        <mat-option *ngFor="let proveedor of proveedores$ | async" [value]="proveedor.idProveedor">
+          {{ proveedor.nombre }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.controls.idProveedor.hasError('required')">
+        El proveedor es obligatorio
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="form-row">
+    <mat-form-field appearance="outline" class="w50">
+      <mat-label>Hora inicio</mat-label>
+      <mat-select formControlName="horaInicioAgendamiento">
+        <mat-option *ngFor="let hora of horariosDisponibles" [value]="hora">
+          {{ hora }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.controls.horaInicioAgendamiento.hasError('required')">
+        La hora de inicio es obligatoria
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w50">
+      <mat-label>Hora fin</mat-label>
+      <mat-select formControlName="horaFinAgendamiento">
+        <mat-option *ngFor="let hora of horariosDisponibles" [value]="hora">
+          {{ hora }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.controls.horaFinAgendamiento.hasError('required')">
+        La hora de fin es obligatoria
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <h3>Productos a recibir</h3>
+  <div formArrayName="productos" class="productos-section">
+    <div *ngFor="let producto of productos.controls; let i = index" 
+         [formGroupName]="i" 
+         class="producto-item">
+      
+      <mat-form-field appearance="outline" class="w60">
+        <mat-label>Producto</mat-label>
+        <mat-select formControlName="idProducto">
+          <mat-option value="">Seleccione un producto...</mat-option>
+          <mat-option *ngFor="let prod of productos$ | async" [value]="prod.idProducto">
+            {{ prod.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w30">
+        <mat-label>Cantidad</mat-label>
+        <input matInput type="number" formControlName="cantidad" min="1">
+      </mat-form-field>
+
+      <button mat-icon-button 
+              color="warn" 
+              type="button" 
+              (click)="eliminarProducto(i)"
+              [disabled]="productos.length === 1"
+              class="w10">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+
+    <button mat-stroked-button 
+            type="button" 
+            (click)="agregarProducto()"
+            class="add-product-btn">
+      <mat-icon>add</mat-icon> Agregar producto
+    </button>
+  </div>
+
+  <div class="actions">
+    <button mat-stroked-button routerLink="/turnos">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+      Reservar Turno
+    </button>
+  </div>
+</form>
