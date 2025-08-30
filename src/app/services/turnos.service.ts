@@ -38,21 +38,6 @@ export class TurnosService {
     return this._turnos$.pipe(map(list => list.find(t => t.idTurno === idTurno)));
   }
 
-  getTurnosPorFecha$(fecha: string): Observable<Turno[]> {
-    return this._turnos$.pipe(
-      map(list => list
-        .filter(t => t.fecha === fecha)
-        .sort((a, b) => a.horaInicioAgendamiento.localeCompare(b.horaInicioAgendamiento))
-      )
-    );
-  }
-
-  getDetallesPorTurno$(idTurno: number): Observable<TurnoDetalle[]> {
-    return this._detalles$.pipe(
-      map(list => list.filter(d => d.idTurno === idTurno))
-    );
-  }
-
   getTurnoCompleto$(idTurno: number): Observable<TurnoCompleto | undefined> {
     return this._turnos$.pipe(
       map(turnos => {
@@ -63,6 +48,10 @@ export class TurnosService {
         return { ...turno, detalles };
       })
     );
+  }
+
+  getDetallesPorTurno(idTurno: number): TurnoDetalle[] {
+    return this._detalles$.value.filter(d => d.idTurno === idTurno);
   }
 
   create(turnoData: {

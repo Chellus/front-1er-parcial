@@ -2,11 +2,6 @@
   <a mat-raised-button color="primary" routerLink="/turnos/nuevo">
     <mat-icon>add</mat-icon> Nuevo Turno
   </a>
-
-  <mat-form-field appearance="outline">
-    <mat-label>Filtrar</mat-label>
-    <input matInput [formControl]="filter" placeholder="Buscar por proveedor o fecha..." />
-  </mat-form-field>
 </div>
 
 <table mat-table [dataSource]="(items$ | async) ?? []" class="mat-elevation-z2">
@@ -21,7 +16,7 @@
   </ng-container>
 
   <ng-container matColumnDef="horario">
-    <th mat-header-cell *matHeaderCellDef>Horario</th>
+    <th mat-header-cell *matHeaderCellDef>Horario Agendamiento</th>
     <td mat-cell *matCellDef="let row">{{ row.horaInicioAgendamiento }} - {{ row.horaFinAgendamiento }}</td>
   </ng-container>
 
@@ -39,28 +34,40 @@
     </td>
   </ng-container>
 
+  <ng-container matColumnDef="jaula">
+    <th mat-header-cell *matHeaderCellDef>Jaula</th>
+    <td mat-cell *matCellDef="let row">{{ row.nombreJaula || 'No asignada' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="horaInicioRecepcion">
+    <th mat-header-cell *matHeaderCellDef>Hora Inicio Recepción</th>
+    <td mat-cell *matCellDef="let row">{{ row.horaInicioRecepcion}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="horaFinRecepcion">
+    <th mat-header-cell *matHeaderCellDef>Hora Fin Recepción</th>
+    <td mat-cell *matCellDef="let row">{{ row.horaFinRecepcion }}</td>
+  </ng-container>
+
   <ng-container matColumnDef="acciones">
-    <th mat-header-cell *matHeaderCellDef>Acciones</th>
+      <th mat-header-cell *matHeaderCellDef>Acciones</th>
+      <td mat-cell *matCellDef="let row">
+        <button mat-stroked-button color="primary" *ngIf="!row.horaInicioRecepcion && !row.horaFinRecepcion" (click)="mostrarInicioRecepcion(row.idTurno)">
+          <mat-icon>play_arrow</mat-icon> Iniciar
+        </button>
+        <button mat-stroked-button color="accent" *ngIf="row.horaInicioRecepcion && !row.horaFinRecepcion" (click)="finalizarRecepcion(row.idTurno, row.idJaula)">
+          <mat-icon>stop</mat-icon> Finalizar
+        </button>
+        <button mat-stroked-button color="warn" (click)="delete(row.idTurno)">
+          <mat-icon>delete</mat-icon> Eliminar
+        </button>
+      </td>
+  </ng-container>
+
+  <ng-container matColumnDef="detalles">
+    <th mat-header-cell *matHeaderCellDef>Detalles</th>
     <td mat-cell *matCellDef="let row">
-      <button mat-icon-button 
-              *ngIf="!row.horaInicioRecepcion && !row.horaFinRecepcion"
-              color="primary" 
-              (click)="mostrarInicioRecepcion(row.idTurno)"
-              matTooltip="Iniciar Recepción">
-        <mat-icon>play_arrow</mat-icon>
-      </button>
-      
-      <button mat-icon-button 
-              *ngIf="row.horaInicioRecepcion && !row.horaFinRecepcion"
-              color="accent" 
-              (click)="finalizarRecepcion(row.idTurno, row.idJaula)"
-              matTooltip="Finalizar Recepción">
-        <mat-icon>stop</mat-icon>
-      </button>
-      
-      <button mat-icon-button color="warn" (click)="delete(row.idTurno)" matTooltip="Eliminar">
-        <mat-icon>delete</mat-icon>
-      </button>
+      <button mat-button (click)="abrirModalDetalles(row)">Ver Detalles</button>
     </td>
   </ng-container>
 
@@ -89,6 +96,26 @@
               [disabled]="!jaulaSeleccionada">
         Confirmar
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Detalles de Productos -->
+<div class="modal-detalles" *ngIf="mostrandoModalDetalles">
+  <div class="modal-contenido">
+    <h3>Productos del Turno</h3>
+    <table class="productos-table">
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+      </tr>
+      <tr *ngFor="let producto of productos">
+        <td>{{ producto.nombre }}</td>
+        <td>{{ producto.cantidad }}</td>
+      </tr>
+    </table>
+    <div class="modal-acciones">
+      <button mat-stroked-button (click)="cerrarModalDetalles()">Cerrar</button>
     </div>
   </div>
 </div>

@@ -16,55 +16,35 @@ table {
 }
 
 .mat-mdc-header-cell {
-  font-weight: 600;
-  color: #1976d2;
+  font-weight: 500;
+  color: black;
 }
 
 .mat-mdc-cell {
   padding: 12px 8px;
 }
 
-/* Estados del turno */
-.estado-agendado {
-  background-color: #e3f2fd;
-  color: #1976d2;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
+.productos-table {
+  width: 100%;
+  text-align: center;
 }
-
-.estado-en-recepcion {
-  background-color: #fff3e0;
-  color: #f57c00;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.estado-finalizado {
-  background-color: #e8f5e8;
-  color: #388e3c;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
+.productos-table th, .productos-table td {
+  text-align: center; 
 }
 
 /* Modal para selección de jaula */
-.modal-jaula {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
+.modal-jaula, .modal-detalles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
 
 .modal-contenido {
   background: white;

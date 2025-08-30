@@ -36,7 +36,7 @@ export class TurnosListComponent {
   private dialog = inject(MatDialog);
 
   filter = new FormControl('', { nonNullable: true });
-  displayedColumns = ['idTurno', 'fecha', 'horario', 'proveedor', 'estado', 'acciones'];
+  displayedColumns = ['idTurno', 'fecha', 'horario', 'proveedor', 'jaula', 'estado', 'horaInicioRecepcion', 'horaFinRecepcion', 'acciones', 'detalles'];
 
   // Para modal de jaula
   mostrandoModalJaula = false;
@@ -44,22 +44,28 @@ export class TurnosListComponent {
   jaulaSeleccionada = 0;
   jaulasLibres$ = this.jaulasService.getLibres$();
 
+  // Para modal de detalles
+  mostrandoModalDetalles = false;
+  productos: { nombre: string; cantidad: number }[] = [];
+
   items$ = combineLatest([
     this.svc.listTurnos$(),
     this.proveedoresService.list$(),
+      this.jaulasService.list$(),
     this.filter.valueChanges.pipe(startWith('')),
   ]).pipe(
-    map(([turnos, proveedores, filterValue]) =>
-      turnos
-        .map(turno => ({
-          ...turno,
-          nombreProveedor: proveedores.find(p => p.idProveedor === turno.idProveedor)?.nombre || 'Sin nombre'
-        }))
-        .filter(item =>
-          item.nombreProveedor.toLowerCase().includes(filterValue.toLowerCase()) ||
-          item.fecha.includes(filterValue)
-        )
-    )
+      map(([turnos, proveedores, jaulas, filterValue]) =>
+        turnos
+          .map(turno => ({
+            ...turno,
+            nombreProveedor: proveedores.find(p => p.idProveedor === turno.idProveedor)?.nombre || 'Sin nombre',
+            nombreJaula: turno.idJaula ? (jaulas.find(j => j.idJaula === turno.idJaula)?.nombre || 'No asignada') : 'No asignada',
+          }))
+          .filter(item =>
+            item.nombreProveedor.toLowerCase().includes(filterValue.toLowerCase()) ||
+            item.fecha.includes(filterValue)
+          )
+      )
   );
 
   delete(id: number): void {
@@ -71,12 +77,12 @@ export class TurnosListComponent {
     });
   }
 
-  getEstadoTurno(turno: any): string {
-    if (turno.horaFinRecepcion) return 'Finalizado';
-    if (turno.horaInicioRecepcion) return 'En Recepción';
-    return 'Agendado';
+  getEstadoTurno(turno: any): String{
+    if (turno.horaFinRecepcion) return 'completado';
+    if (turno.horaInicioRecepcion) return 'en recepcion';
+    return 'pendiente';
   }
-
+  
   getEstadoClass(turno: any): string {
     const estado = this.getEstadoTurno(turno);
     return estado.toLowerCase().replace(/\s+/g, '-');
@@ -107,5 +113,24 @@ export class TurnosListComponent {
   cancelarInicioRecepcion(): void {
     this.mostrandoModalJaula = false;
     this.turnoSeleccionado = null;
+  }
+
+  abrirModalDetalles(turno: any): void {
+    const detalles = this.svc.getDetallesPorTurno(turno.idTurno);
+    this.productosService.list$().subscribe(
+      productosArr => {
+        this.productos = detalles.map(det => {
+          const prod = productosArr.find(p => p.idProducto === det.idProducto);
+          return {
+            nombre: prod ? prod.nombre : 'Desconocido',
+            cantidad: det.cantidad
+          };
+      });
+      this.mostrandoModalDetalles = true;
+    });
+  }
+
+  cerrarModalDetalles(): void {
+    this.mostrandoModalDetalles = false;
   }
 }
