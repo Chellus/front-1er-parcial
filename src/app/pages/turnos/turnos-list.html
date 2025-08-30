@@ -2,6 +2,11 @@
   <a mat-raised-button color="primary" routerLink="/turnos/nuevo">
     <mat-icon>add</mat-icon> Nuevo Turno
   </a>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Filtrar por fecha (dd/mm/yyyy)</mat-label>
+    <input matInput [formControl]="filter" placeholder="Ej: 30/08/2025" />
+  </mat-form-field>
 </div>
 
 <table mat-table [dataSource]="(items$ | async) ?? []" class="mat-elevation-z2">

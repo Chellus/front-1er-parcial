@@ -16,6 +16,8 @@ import { ProveedoresService } from '../../services/proveedores.service';
 import { JaulasService } from '../../services/jaulas.service';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { combineLatest, startWith, map } from 'rxjs';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-turnos-list',
@@ -23,7 +25,7 @@ import { combineLatest, startWith, map } from 'rxjs';
   imports: [
     CommonModule, ReactiveFormsModule, RouterLink,
     MatTableModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, 
-    MatSelectModule, MatTooltipModule, MatDialogModule,
+    MatSelectModule, MatTooltipModule, MatDialogModule, MatDatepickerModule, MatNativeDateModule
   ],
   templateUrl: './turnos-list.html',
   styleUrl: './turnos-list.css'
@@ -48,24 +50,32 @@ export class TurnosListComponent {
   mostrandoModalDetalles = false;
   productos: { nombre: string; cantidad: number }[] = [];
 
+  ngOnInit() {
+  // Forzar recarga de datos desde localStorage
+  const turnos = (this.svc as any).store.getArray('turnos');
+  const detalles = (this.svc as any).store.getArray('turnos_detalle');
+  (this.svc as any)._turnos$.next(turnos);
+  (this.svc as any)._detalles$.next(detalles);
+}
+
   items$ = combineLatest([
     this.svc.listTurnos$(),
     this.proveedoresService.list$(),
       this.jaulasService.list$(),
     this.filter.valueChanges.pipe(startWith('')),
   ]).pipe(
-      map(([turnos, proveedores, jaulas, filterValue]) =>
-        turnos
-          .map(turno => ({
-            ...turno,
-            nombreProveedor: proveedores.find(p => p.idProveedor === turno.idProveedor)?.nombre || 'Sin nombre',
-            nombreJaula: turno.idJaula ? (jaulas.find(j => j.idJaula === turno.idJaula)?.nombre || 'No asignada') : 'No asignada',
-          }))
-          .filter(item =>
-            item.nombreProveedor.toLowerCase().includes(filterValue.toLowerCase()) ||
-            item.fecha.includes(filterValue)
-          )
-      )
+        map(([turnos, proveedores, jaulas, filterValue]) =>
+          turnos
+            .map(turno => ({
+              ...turno,
+              nombreProveedor: proveedores.find(p => p.idProveedor === turno.idProveedor)?.nombre || 'Sin nombre',
+              nombreJaula: turno.idJaula ? (jaulas.find(j => j.idJaula === turno.idJaula)?.nombre || 'No asignada') : 'No asignada',
+            }))
+            .filter(item =>
+              item.fecha.includes(filterValue)
+            )
+            .sort((a, b) => a.horaInicioAgendamiento.localeCompare(b.horaInicioAgendamiento))
+        )
   );
 
   delete(id: number): void {
@@ -73,7 +83,9 @@ export class TurnosListComponent {
       data: { message: '¿Está seguro que desea eliminar este turno?' }
     });
     dialogRef.afterClosed().subscribe(result => {
-      if (result) this.svc.delete(id);
+      if (result) {
+          this.svc.delete(id);
+      }
     });
   }
 
